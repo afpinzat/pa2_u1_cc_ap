@@ -10,7 +10,7 @@ import jakarta.inject.Inject;
 @QuarkusMain
 public class Main implements QuarkusApplication {
 
-   @Inject
+    @Inject
     private PedidoService pedidoService;
 
     public static void main(String[] args) {
@@ -23,7 +23,7 @@ public class Main implements QuarkusApplication {
     public int run(String... args) {
         System.out.println("Iniciando Aplicacion Quarkus...");
         Pedido pedido = new Pedido(" Juan Perez ", " Laptop", 1500.00, "juan.perez@example"); // creamos el objeto de la
-
+        pedido.setTelefono("0999887765");
         this.pedidoService.realizar(pedido);
 
         return 0;

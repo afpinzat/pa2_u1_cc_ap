@@ -5,41 +5,22 @@ import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-//@RequestScopped
-//@Singleton  //Delego el control al contenedor Arc
+// @RequestScopped
+// @Singleton //Delego el control al contenedor Arc
 
 public class PedidoService {
 
-  /*   @Inject 
-    private MailService mailService;*/
-
-
-    
-  /*   private MailService mailService;
-
-    //Inyeccion de dependencias por constructor
-    @Inject 
-    public PedidoService(MailService mailService){
-        this.mailService = mailService;
-    }*/
-
-    /*    private MailService mailService;
-       
-       //Inyeccion de dependencia por setter
-       @Inject 
-       public void setMailService(MailService mailService) {
-        System.out.println("Se esta inyectando el servicio de correo electronico service");
-        this.mailService = mailService;
-    }*/
-
-
-      // @Inject 
-      // private MailService diferente;
+    // @Inject
+    // private MailService diferente;
+    //Por tener 2 impementaciones de la misma interfaz da problema de ambiguedad
+    @Inject
+    @Named("mail");
+    private MailService notificacionCorreo;
+    @Inject
+    @Named("sms");
+    private SMSService notificacionSMS;
 
     public void realizar(Pedido pedido) {
-
-        //Lookup de la clase MailService
-        MailService mailService = CDI.current().select(MailService.class).get();
 
         System.out.println("realizando pedido...");
         System.out.println("Pedido realizado por el cliente :" + pedido.getCliente());
@@ -48,16 +29,15 @@ public class PedidoService {
         System.out.println("Correo:" + pedido.getCorreo());
         System.out.println(" Pedido realizado con exito...");
 
-       
-        String asunto = " Confirmacion de pedido";
         String cuerpo = "Estimado" + pedido.getCliente() + ", su pedido de  " +
-                pedido.getProducto() + " por un total de $" + pedido.getTotal() + " ha sido realizado con exito.";
-        mailService.enviar(pedido.getCorreo(), asunto, cuerpo);
+                pedido.getProducto() + " por un total de $" + pedido.getTotal() +
+                " ha sido realizado con exito.";
+
+        // Notificacion de pedido por correo electronico
+        this.notificacionCorreo.enviar(pedido.getCorreo(), cuerpo);
+        // Notificacion de pedido por SMS
+        this.notificacionSMS.enviar(pedido.getTelefono(), cuerpo);
 
     }
 
-
-
-
-    
 }
