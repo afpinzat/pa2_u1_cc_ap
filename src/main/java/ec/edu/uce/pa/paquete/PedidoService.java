@@ -1,6 +1,7 @@
 package ec.edu.uce.pa.paquete;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -9,8 +10,8 @@ import jakarta.inject.Inject;
 
 public class PedidoService {
 
-     @Inject 
-    private MailService mailService;
+  /*   @Inject 
+    private MailService mailService;*/
 
 
     
@@ -22,7 +23,7 @@ public class PedidoService {
         this.mailService = mailService;
     }*/
 
-   /*    private MailService mailService;
+    /*    private MailService mailService;
        
        //Inyeccion de dependencia por setter
        @Inject 
@@ -32,8 +33,14 @@ public class PedidoService {
     }*/
 
 
+      // @Inject 
+      // private MailService diferente;
 
     public void realizar(Pedido pedido) {
+
+        //Lookup de la clase MailService
+        MailService mailService = CDI.current().select(MailService.class).get();
+
         System.out.println("realizando pedido...");
         System.out.println("Pedido realizado por el cliente :" + pedido.getCliente());
         System.out.println(" Producto :" + pedido.getProducto());
@@ -45,7 +52,7 @@ public class PedidoService {
         String asunto = " Confirmacion de pedido";
         String cuerpo = "Estimado" + pedido.getCliente() + ", su pedido de  " +
                 pedido.getProducto() + " por un total de $" + pedido.getTotal() + " ha sido realizado con exito.";
-        this.mailService.enviar(pedido.getCorreo(), asunto, cuerpo);
+        mailService.enviar(pedido.getCorreo(), asunto, cuerpo);
 
     }
 
