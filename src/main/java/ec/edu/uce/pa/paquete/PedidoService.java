@@ -3,6 +3,8 @@ package ec.edu.uce.pa.paquete;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
 
 @ApplicationScoped
 // @RequestScopped
@@ -14,10 +16,12 @@ public class PedidoService {
     // private MailService diferente;
     //Por tener 2 impementaciones de la misma interfaz da problema de ambiguedad
     @Inject
-    @Named("mail");
+    @Named("mail")
     private MailService notificacionCorreo;
+
+    
     @Inject
-    @Named("sms");
+    @Named("sms")
     private SMSService notificacionSMS;
 
     public void realizar(Pedido pedido) {
