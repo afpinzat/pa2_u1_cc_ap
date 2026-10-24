@@ -17,12 +17,12 @@ public class PedidoService {
     //Por tener 2 impementaciones de la misma interfaz da problema de ambiguedad
     @Inject
     @Named("mail")
-    private MailService notificacionCorreo;
+    private Notificacion notificacionCorreo;
 
-    
+
     @Inject
     @Named("sms")
-    private SMSService notificacionSMS;
+    private Notificacion notificacionSMS;
 
     public void realizar(Pedido pedido) {
 
@@ -33,12 +33,16 @@ public class PedidoService {
         System.out.println("Correo:" + pedido.getCorreo());
         System.out.println(" Pedido realizado con exito...");
 
-        String cuerpo = "Estimado" + pedido.getCliente() + ", su pedido de  " +
+        String cuerpo = "Estimado " + pedido.getCliente() + ", su pedido de  " +
                 pedido.getProducto() + " por un total de $" + pedido.getTotal() +
                 " ha sido realizado con exito.";
 
         // Notificacion de pedido por correo electronico
         this.notificacionCorreo.enviar(pedido.getCorreo(), cuerpo);
+        this.notificacionCorreo.setCantidad(this.notificacionCorreo.getCantidad()+1);
+        this.notificacionCorreo.setNombre("Correo de pedido");
+
+       System.out.println("Cantidad de correos enviados: " + this.notificacionCorreo.getCantidad());
         // Notificacion de pedido por SMS
         this.notificacionSMS.enviar(pedido.getTelefono(), cuerpo);
 
