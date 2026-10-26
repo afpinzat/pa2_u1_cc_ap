@@ -1,62 +1,46 @@
-# pa2_u1_cc_ap
+## 📚 Preguntas teóricas del ejercicio
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+### 1. ¿En qué parte del ejercicio se aplica IoC y en cuál DI?
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+**IoC (Inversión de Control):** en todo el proyecto. El contenedor **ArC** de Quarkus es quien crea y administra las instancias de `VentaService`, `Auditoria`, `DescuentoRegular` y `DescuentoVIP`. Ninguna de estas clases se instancia con `new`; el control de su creación pasa del programador al contenedor.
 
-## Running the application in dev mode
+**DI (Inyección de Dependencias):** en `VentaService`, que recibe sus dependencias de dos formas para demostrar ambas técnicas:
 
-You can run your application in dev mode that enables live coding using:
+- **Por constructor:** `CalculadoraDescuento` (con `@Named("REGULAR")` y `@Named("VIP")`).
+- **Por atributo:** `Auditoria` con `@Inject` sobre el campo.
 
-```shell script
-./mvnw quarkus:dev
-```
+---
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+### 2. ¿Qué función cumplen los Qualifiers y por qué son necesarios?
 
-## Packaging and running the application
+Los **Qualifiers** (`@Named("REGULAR")`, `@Named("VIP")`) permiten distinguir entre varias implementaciones de una misma interfaz (`CalculadoraDescuento`).
 
-The application can be packaged using:
+Sin ellos, al haber dos beans del mismo tipo, ArC no sabría cuál inyectar en cada punto y lanzaría `AmbiguousResolutionException` al arrancar.
 
-```shell script
-./mvnw package
-```
+Con ellos, se indica explícitamente qué implementación va en cada inyección: `REGULAR` para ventas regulares y `VIP` para ventas VIP.
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+---
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+### 3. ¿Cuál es la diferencia entre `@ApplicationScoped` y `@Dependent`?
 
-If you want to build an _über-jar_, execute the following command:
+@ApplicationScoped: el contenedor crea una sola instancia por aplicación y la reutiliza en todos los puntos de inyección. Vive mientras viva la aplicación.
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+@Dependent: el contenedor crea una instancia nueva cada vez que se inyecta. Su ciclo de vida depende del componente gestionado que la inyecta (si el componente gestionado desaparece, la instancia @Dependent también).
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+---
 
-## Creating a native executable
+### 4. ¿Por qué las instancias `@ApplicationScoped` pueden reutilizarse entre varias ventas?
 
-You can create a native executable using:
+Porque el contenedor ArC crea **una única instancia** y la mantiene viva durante toda la aplicación.
 
-```shell script
-./mvnw package -Dnative
-```
+Como `VentaService` no guarda estado por venta (solo un contador global y referencias inmutables a las calculadoras y auditoría), es seguro reutilizar la misma instancia en todas las ventas.
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Esto se evidencia con el **UUID**: al imprimir el identificador de `VentaService` antes y después de procesar las ventas, el UUID es el mismo, confirmando que no se creó una instancia nueva.
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+---
 
-You can then execute your native executable with: `./target/pa2_u1_cc_ap-1.0.0-SNAPSHOT-runner`
+### 5. ¿Qué sucedería si se elimina el Qualifier de un punto de inyección de `CalculadoraDescuento`?
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+Al existir dos implementaciones (`DescuentoRegular` y `DescuentoVIP`) del mismo tipo `CalculadoraDescuento`, ArC no podría resolver cuál inyectar y fallaría al arrancar con `AmbiguousResolutionException`.
 
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Se necesitaría marcar una de ellas con `@Default` o mantener el `@Named` en el punto de inyección. Por eso los **Qualifiers son obligatorios** en este escenario.
