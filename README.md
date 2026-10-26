@@ -1,4 +1,4 @@
-## 📚 Preguntas teóricas del ejercicio
+## Preguntas teóricas del ejercicio
 
 ### 1. ¿En qué parte del ejercicio se aplica IoC y en cuál DI?
 
