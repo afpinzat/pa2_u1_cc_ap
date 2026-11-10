@@ -14,18 +14,18 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class PedidoService {
 
-    @Auditoria 
-    @MedirTiempo 
-    @Sms 
-    @Mail 
+   /*  @Auditoria
+    @MedirTiempo
+    @Sms
+    @Mail*/
 
     public String realizar(Pedido pedido, String valor) {
-       
-        try{
-        Thread.sleep(1500);
-        }catch(Exception e){
+
+        try {
+            Thread.sleep(1500);
+        } catch (Exception e) {
         }
-        
+
         System.out.println("realizando pedido...");
         System.out.println("Pedido realizado por el cliente :" + pedido.getCliente());
         System.out.println("Producto :" + pedido.getProducto());
@@ -34,7 +34,7 @@ public class PedidoService {
         System.out.println("Pedido realizado con exito...");
 
         return "Pedido realizado con exito";
-    
+
     }
 
 }

@@ -7,7 +7,6 @@ public class Pedido {
     private String correo;
     private String telefono;
 
-
     public Pedido() {
 
     }
@@ -51,7 +50,6 @@ public class Pedido {
         this.correo = correo;
     }
 
-    
     public String getTelefono() {
         return telefono;
     }
